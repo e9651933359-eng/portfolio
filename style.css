@@ -1409,8 +1409,10 @@ a:hover > .lnk__ar,a:focus-visible > .lnk__ar{transform:translate(1px,-1px)}
 .goat-small .fvx .rock{zoom:var(--goat-tk,.85)}
 .goat-small .fvx .horns{zoom:var(--goat-hk,1)}   /* вариант «без лучей»: «Let’s work together» меньше на 15 % */
 /* лучи «11 В лучах»: бегущая волна по часовой, круг за 2 с; 70 % → 100 % цвета знака (в тёмном футере цвет белый — инверсия автоматическая), на втором круге обратно */
-@keyframes goatRay{0%{opacity:.7}5%{opacity:1}50%{opacity:1}55%{opacity:.7}100%{opacity:.7}}
-.fvx .horns.goat-rays line[stroke-width="9"]{opacity:.7;animation:goatRay 4s linear infinite}
+@keyframes goatRay{0%{opacity:var(--ray-min,.7)}5%{opacity:1}50%{opacity:1}55%{opacity:var(--ray-min,.7)}100%{opacity:var(--ray-min,.7)}}
+.fvx .horns.goat-rays line[stroke-width="9"]{opacity:var(--ray-min,.7);animation:goatRay 4s linear infinite}
+/* на белом фоне чёрный знак при 70 % почти не отличим от 100 % — там глубже провал */
+.fvx__layer--light .horns.goat-rays{--ray-min:.4}
 @media (prefers-reduced-motion:reduce){.fvx .horns.goat-rays line[stroke-width="9"]{animation:none;opacity:1}}
 /* козы с уменьшенной надписью: расстояние до знака ×2 (только десктопная раскладка; на узких экранах знак и так прижат к правому краю) */
 @media (min-width:981px){[data-variant="b"].goat-small .fv1.fvx .horns{margin-left:calc(22px / var(--goat-hk,1))}}
