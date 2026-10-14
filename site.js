@@ -263,6 +263,7 @@ const CASES = {
   }
 };
 const ORDER = ['federation','folders','ats','fms']; // порядок карточек
+const SHOW_PROJECT_LINK = false; // кнопка «Проект ↗» на карточках скрыта; true — вернуть
 
 const EXPERIENCE = [
   { co:'МТС Линк', role:'Senior Product Designer', when:'Январь 2026 — сейчас', now:true, open:false,
@@ -437,8 +438,8 @@ function kcard(p, variant) {
       <p class="kcard__lead">${esc(p.b.lead)}</p>
       ${p.b.rows ? `<dl class="kcard__facts">${p.b.rows.map(([k, v]) => `<div><dt>${esc(k)}</dt><dd>${esc(v)}</dd></div>`).join('')}</dl>` : ''}
       <div class="kcard__btns">
-        <button type="button" class="pill pill--dark" data-case="${p.slug}">${L('Кейс')}</button>
-        ${SITES[p.slug] ? `<a class="pill pill--outline" href="${SITES[p.slug]}" target="_blank" rel="noopener">${L('Проект')} <span aria-hidden="true">↗</span></a>` : (p.slug === 'ats' ? `<span class="pill pill--outline is-soon" aria-disabled="true" title="${L('Ссылка скоро появится')}">${L('Проект')} <span aria-hidden="true">↗</span></span>` : '')}
+        <button type="button" class="pill pill--dark" data-case="${p.slug}">${L('Разбор кейса')}</button>
+        ${!SHOW_PROJECT_LINK ? '' : SITES[p.slug] ? `<a class="pill pill--outline" href="${SITES[p.slug]}" target="_blank" rel="noopener">${L('Проект')} <span aria-hidden="true">↗</span></a>` : (p.slug === 'ats' ? `<span class="pill pill--outline is-soon" aria-disabled="true" title="${L('Ссылка скоро появится')}">${L('Проект')} <span aria-hidden="true">↗</span></span>` : '')}
       </div>
     </div>
   </article>`;
@@ -477,7 +478,7 @@ $('#xpb-grid').innerHTML = EXPERIENCE.map((x, i) => {
     <p class="xpb__role">${esc(x.role)}</p>
     <p class="xpb__about">${esc(x.about)}</p>
         <dl class="xpb__stats">${b.stats.map(([n, l]) => `<div><dt>${esc(n)}</dt><dd>${esc(l)}</dd></div>`).join('')}</dl>
-    <div class="xpb__links">${(i === 0 ? x.cases || [] : []).map(([k, l]) => `<button type="button" class="xp__link" data-case="${k}">${l ? L('Кейс: ') + esc(l) : L('Открыть кейс')} <span aria-hidden="true">↗</span></button>`).join('')}</div>
+    <div class="xpb__links">${(i === 0 ? x.cases || [] : []).map(([k, l]) => `<button type="button" class="xp__link" data-case="${k}">${l ? L('Кейс: ') + esc(l) : L('Разбор кейса')} <span aria-hidden="true">↗</span></button>`).join('')}</div>
   </article>`;
 }).join('');
 
@@ -495,7 +496,7 @@ $('#xp-list').innerHTML = EXPERIENCE.map((x, i) => `
       <div class="xp__inner"><div class="xp__body">
         <p class="xp__about">${esc(x.about)}</p>
         <ul class="xp__items">${x.items.map(t => `<li>${t}</li>`).join('')}</ul>
-        ${(x.cases || []).map(([k, l]) => `<button type="button" class="xp__link" data-case="${k}">${l ? L('Кейс: ') + esc(l) : L('Открыть кейс')} <span aria-hidden="true">↗</span></button>`).join('')}
+        ${(x.cases || []).map(([k, l]) => `<button type="button" class="xp__link" data-case="${k}">${l ? L('Кейс: ') + esc(l) : L('Разбор кейса')} <span aria-hidden="true">↗</span></button>`).join('')}
       </div></div>
     </div>
   </div>`).join('');
@@ -926,17 +927,19 @@ window.addEventListener('popstate', () => {
   schedule();
 })();
 
-/* плашка контактов (Б): вниз — прячем, вверх на 60 px — показываем, у верха страницы и при фокусе внутри — всегда видна */
+/* плашка контактов (Б): вниз — прячем, вверх на 500 px подряд (пауза >1 с — счёт заново) — показываем, у верха страницы и при фокусе внутри — всегда видна */
 (() => {
   const bar = document.querySelector('.sidebar__links');
   if (!bar) return;
-  const TOP = 500, DOWN = 12, UP = 60;
-  let last = scrollY, down = 0, up = 0, raf = 0;
+  const TOP = 500, DOWN = 12, UP = 500, IDLE = 1000;   // вверх нужно проехать 500 px подряд; пауза >1 с обнуляет счётчик
+  let last = scrollY, down = 0, up = 0, raf = 0, lastT = 0;
   const tuck = on => bar.classList.toggle('is-tucked', on);
   const tick = () => {
     raf = 0;
-    const y = Math.max(0, scrollY), dy = y - last;
+    const y = Math.max(0, scrollY), dy = y - last, now = performance.now();
     last = y;
+    if (now - lastT > IDLE) { down = up = 0; }   // пользователь задержался — следующий скролл считаем с нуля
+    lastT = now;
     if (y < TOP || bar.matches(':focus-within')) { down = up = 0; tuck(false); return; }
     if (dy > 0) { down += dy; up = 0; if (down > DOWN) tuck(true); }
     else if (dy < 0) { up -= dy; down = 0; if (up > UP) tuck(false); }
@@ -968,3 +971,22 @@ window.addEventListener('popstate', () => {
   });
 })();
 
+
+/* Коза в футере: вариант «В лучах» — уменьшенная надпись/знак, лучи бегут по часовой (круг 2 с). Стили — в конце style.css */
+(() => {
+  const SVG = "<defs></defs><line x1=\"125.0\" y1=\"58.0\" x2=\"125.0\" y2=\"22.0\" stroke=\"currentColor\" stroke-width=\"9\" stroke-linecap=\"round\"/><line x1=\"153.4\" y1=\"62.5\" x2=\"159.6\" y2=\"43.5\" stroke=\"currentColor\" stroke-width=\"9\" stroke-linecap=\"round\"/><line x1=\"179.1\" y1=\"75.6\" x2=\"200.2\" y2=\"46.4\" stroke=\"currentColor\" stroke-width=\"9\" stroke-linecap=\"round\"/><line x1=\"199.4\" y1=\"95.9\" x2=\"215.6\" y2=\"84.2\" stroke=\"currentColor\" stroke-width=\"9\" stroke-linecap=\"round\"/><line x1=\"212.5\" y1=\"121.6\" x2=\"246.7\" y2=\"110.4\" stroke=\"currentColor\" stroke-width=\"9\" stroke-linecap=\"round\"/><line x1=\"217.0\" y1=\"150.0\" x2=\"237.0\" y2=\"150.0\" stroke=\"currentColor\" stroke-width=\"9\" stroke-linecap=\"round\"/><line x1=\"212.5\" y1=\"178.4\" x2=\"246.7\" y2=\"189.6\" stroke=\"currentColor\" stroke-width=\"9\" stroke-linecap=\"round\"/><line x1=\"199.4\" y1=\"204.1\" x2=\"215.6\" y2=\"215.8\" stroke=\"currentColor\" stroke-width=\"9\" stroke-linecap=\"round\"/><line x1=\"179.1\" y1=\"224.4\" x2=\"200.2\" y2=\"253.6\" stroke=\"currentColor\" stroke-width=\"9\" stroke-linecap=\"round\"/><line x1=\"153.4\" y1=\"237.5\" x2=\"159.6\" y2=\"256.5\" stroke=\"currentColor\" stroke-width=\"9\" stroke-linecap=\"round\"/><line x1=\"125.0\" y1=\"242.0\" x2=\"125.0\" y2=\"278.0\" stroke=\"currentColor\" stroke-width=\"9\" stroke-linecap=\"round\"/><line x1=\"96.6\" y1=\"237.5\" x2=\"90.4\" y2=\"256.5\" stroke=\"currentColor\" stroke-width=\"9\" stroke-linecap=\"round\"/><line x1=\"70.9\" y1=\"224.4\" x2=\"49.8\" y2=\"253.6\" stroke=\"currentColor\" stroke-width=\"9\" stroke-linecap=\"round\"/><line x1=\"50.6\" y1=\"204.1\" x2=\"34.4\" y2=\"215.8\" stroke=\"currentColor\" stroke-width=\"9\" stroke-linecap=\"round\"/><line x1=\"37.5\" y1=\"178.4\" x2=\"3.3\" y2=\"189.6\" stroke=\"currentColor\" stroke-width=\"9\" stroke-linecap=\"round\"/><line x1=\"33.0\" y1=\"150.0\" x2=\"13.0\" y2=\"150.0\" stroke=\"currentColor\" stroke-width=\"9\" stroke-linecap=\"round\"/><line x1=\"37.5\" y1=\"121.6\" x2=\"3.3\" y2=\"110.4\" stroke=\"currentColor\" stroke-width=\"9\" stroke-linecap=\"round\"/><line x1=\"50.6\" y1=\"95.9\" x2=\"34.4\" y2=\"84.2\" stroke=\"currentColor\" stroke-width=\"9\" stroke-linecap=\"round\"/><line x1=\"70.9\" y1=\"75.6\" x2=\"49.8\" y2=\"46.4\" stroke=\"currentColor\" stroke-width=\"9\" stroke-linecap=\"round\"/><line x1=\"96.6\" y1=\"62.5\" x2=\"90.4\" y2=\"43.5\" stroke=\"currentColor\" stroke-width=\"9\" stroke-linecap=\"round\"/><g transform=\"translate(125 150) scale(0.58) translate(-123 -159)\"><line x1=\"90\" y1=\"84\" x2=\"90\" y2=\"172\" stroke=\"currentColor\" stroke-width=\"28\" stroke-linecap=\"round\"/><line x1=\"124\" y1=\"150\" x2=\"124\" y2=\"172\" stroke=\"currentColor\" stroke-width=\"28\" stroke-linecap=\"round\"/><line x1=\"158\" y1=\"150\" x2=\"158\" y2=\"172\" stroke=\"currentColor\" stroke-width=\"28\" stroke-linecap=\"round\"/><line x1=\"192\" y1=\"108\" x2=\"192\" y2=\"172\" stroke=\"currentColor\" stroke-width=\"28\" stroke-linecap=\"round\"/><line x1=\"52\" y1=\"236\" x2=\"60\" y2=\"214\" stroke=\"currentColor\" stroke-width=\"24\" stroke-linecap=\"round\"/><line x1=\"107\" y1=\"221\" x2=\"179\" y2=\"221\" stroke=\"currentColor\" stroke-width=\"54\" stroke-linecap=\"round\"/></g>";
+  const horns = [...document.querySelectorAll('.fvx .horns')];
+  if (!horns.length) return;
+  const root = document.documentElement;
+  root.classList.add('goat-small');
+  root.style.setProperty('--goat-tk', 0.8);
+  root.style.setProperty('--goat-hk', 0.8);
+  horns.forEach(h => {
+    h.setAttribute('viewBox', '0 0 250 290'); h.setAttribute('fill', 'none'); h.setAttribute('stroke', 'none');
+    ['stroke-width', 'stroke-linejoin', 'stroke-linecap'].forEach(a => h.removeAttribute(a));
+    h.innerHTML = SVG;
+    h.classList.add('goat-rays');
+    const rays = [...h.querySelectorAll('line[stroke-width="9"]')];   // лучи по часовой, начиная с 12 часов
+    rays.forEach((r, n) => r.style.animationDelay = (n / rays.length * 2).toFixed(3) + 's');
+  });
+})();
