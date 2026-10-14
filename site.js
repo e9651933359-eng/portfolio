@@ -113,7 +113,7 @@ const CASES = {
   },
   folders: {
     slug:'folders', company:'МТС Линк', type:'Папки для чатов и каналов', year:'2026', tone:'plum', layout:'main', hideLead:true,
-    tileFrame:'assets/images/folders/00-cover.webp?v=4',
+    tileFrame:'assets/images/folders/00-cover.webp?v=6',
     chip:'Корпоративные коммуникации',
     title:'Как навести порядок в чатах и каналах',
     outcome:'Топ-3 запрос пользователей. Для 21 клиента папки были условием покупки, потенциал этих сделок за первые 6 месяцев 2026 года превышал 25 млн ₽.',
