@@ -224,7 +224,7 @@ const CASES = {
         rowsHidden:[['Роль в проекте','Senior Product Designer · ведущий дизайнер группы'],['Использовал','Полевые исследования, CJM, Service Blueprint, UX‑тесты, дизайн‑система']] }
   },
   autotech: {
-    slug:'autotech', company:'', type:'AutoTech · сервис', year:'2018–2019', tone:'ink', layout:'flip',
+    slug:'autotech', company:'', type:'AutoTech · сервис', year:'2018–2019', tone:'ink', layout:'flip', hideLead:true,
     tileFrame:'assets/images/autotech/00-cover.webp?v=2',
     chip:'B2C · Web',
     title:'Как вырастить ARPU при стабильной аудитории 115K+',
