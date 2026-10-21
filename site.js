@@ -430,6 +430,7 @@ function kcard(p, variant) {
   return `<article class="kcard kcard--${variant}" data-tone="${p.tone}">
     <div class="kcard__media">${media}</div>
     <div class="kcard__panel kcard__panel--b">
+      ${p.b.tags ? `<ul class="kcard__tags">${p.b.tags.map(t => `<li>${esc(L(t))}</li>`).join('')}</ul>` : ''}
       <h2 class="kcard__title"><a href="?case=${p.slug}" data-case="${p.slug}">${esc(p.b.headline)}</a></h2>
       <p class="kcard__lead">${esc(p.b.lead)}</p>
       ${p.b.rows ? `<dl class="kcard__facts">${p.b.rows.map(([k, v]) => `<div><dt>${esc(k)}</dt><dd>${esc(v)}</dd></div>`).join('')}</dl>` : ''}
@@ -589,7 +590,10 @@ function caseHTML(p) {
   const HIDE_LINKS = ['Figma'];
   /* «Период» скрыт во всех кейсах (непонятно: срок проекта или работы в компании); данные period в CASES остаются. true → строка вернётся */
   const HIDE_PERIOD = true;
+  /* «Компания» — первая строка таблицы: ссылка на сайт компании (адрес — из SITES); пока для ATS и МТС Линк (Федерации, Папки) */
+  const COMPANY_LINK = ['ats', 'federation', 'folders'];
   const facts = [
+    ...(COMPANY_LINK.includes(p.slug) && SITES[p.slug] ? [[L('Компания'), lnk(SITES[p.slug], '', 1), '']] : []),
     ...(p.links || []).filter(([k]) => !HIDE_LINKS.includes(k))
       .map(([k, ls]) => [k, ls.filter(([l]) => !HIDE_LINKS.includes(l)), ls.length])
       .filter(([, vis]) => vis.length)
