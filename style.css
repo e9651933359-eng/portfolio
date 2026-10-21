@@ -1425,3 +1425,8 @@ a:hover > .lnk__ar,a:focus-visible > .lnk__ar{transform:translate(1px,-1px)}
 /* теги кейса над заголовком карточки (b.tags в site.js): мелкие чипы 12 px, полупрозрачная белая заливка + волосяная рамка — читаются на любом тоне карточки; пока только у ATS */
 [data-variant="b"] .kcard__tags{list-style:none;margin:calc(var(--kc-edge) / -3) 0 calc(var(--kc-pair) * .75);padding:0;display:flex;flex-wrap:wrap;gap:6px}   /* сверху ближе к краю панели (36 → 24 px), до заголовка дальше (16 → 24 px); на мобильном — те же пропорции */
 [data-variant="b"] .kcard__tags li{display:inline-flex;align-items:center;height:24px;padding:0 10px;border-radius:999px;background:rgba(255,255,255,.6);box-shadow:inset 0 0 0 1px rgba(15,15,15,.08);font-family:var(--f-body);font-size:12px;line-height:1;font-weight:500;letter-spacing:.01em;color:rgba(15,15,15,.7);white-space:nowrap}
+
+/* заголовок в модалке кейса: интерлиньяж 1.08 → 1.28 на планшете и десктопе (>760); на мобильном остаётся 1.08 */
+@media (min-width:761px){
+  [data-variant="b"] .case__title{line-height:1.28}
+}

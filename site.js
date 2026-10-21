@@ -4,7 +4,7 @@
    ============================================================ */
 const CASES = {
   ats: {
-    slug:'ats', company:'', type:'ATS · HR Tech', year:'2024–2025', tone:'clay', layout:'main',
+    slug:'ats', company:'', type:'ATS · HR Tech', year:'2024–2025', tone:'clay', layout:'main', hideLead:true,
     tileFrame:'assets/images/ats/00-cover.webp',
     /* обложка слоями: основа без трёх карточек кандидатов + три строки, проявляются по очереди (x0/y — координаты в исходнике 1600×812) */
     tileLayers:{ w:1600, h:812, x0:216, base:'assets/images/ats/00-cover-base.webp', rows:[['assets/images/ats/00-cover-r1.webp',147,310],['assets/images/ats/00-cover-r2.webp',310,468],['assets/images/ats/00-cover-r3.webp',468,623]] },
