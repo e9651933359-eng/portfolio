@@ -1393,6 +1393,11 @@ a:hover > .lnk__ar,a:focus-visible > .lnk__ar{transform:translate(1px,-1px)}
   [data-variant="b"] #case-autotech .kcard__panel--b .kcard__title{max-width:none}
 }
 
+/* десктоп/планшет (>760): «Папки» — «для 21 клиента,» остаётся в первой строке, «NPS +3,8 п.п.» уходит во вторую (первая строка ≈729 px) */
+@media (min-width:761px){
+  [data-variant="b"] #case-folders .kcard__panel--b .kcard__title{max-width:740px}
+}
+
 
 /* Фон обложек: градиентные «пятна» под рамкой убраны (14.10) — фон плоский, как раньше. */
 
